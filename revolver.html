@@ -44,7 +44,6 @@
         var rotating = 0;
 
         function handleRevolverDown(event) {
-          console.log("Start rotation on: " + this.src + " at " + event.clientX);
           this.startDirection = calculateDirection(this, event);
           rotating = 1;
           event.preventDefault();
@@ -52,7 +51,6 @@
         }
 
         function handleRevolverUpOut(event) {
-          console.log("End rotation on: " + this.src + " at " + event.clientX);
           this.rotation = (this.lastDirection + 360) % 360;
 
           rotating = 0;
@@ -66,7 +64,6 @@
             this.lastDirection = this.rotation + mouseDirection - this.startDirection;
 
             rotate(this, this.lastDirection);
-            console.log("Drag on: " + this.src + " at " + this.lastDirection);
           }
           event.preventDefault();
           event.stopPropagation();
@@ -81,10 +78,10 @@
         }
 
         function rotate(element, rotation) {
-           element.style =
-                 "-moz-transform:rotate(" + rotation + "deg); " +
-                 "-webkit-transform:rotate(" + rotation + "deg); " +
-                 "-ms-transform:rotate(" + rotation + "deg); "
+          element.style.transform = "rotate(" + rotation + "deg)";
+          element.style.MozTransform = "rotate(" + rotation + "deg)";
+          element.style.WebkitTransform = "rotate(" + rotation + "deg)";
+          element.style.msTransform = "rotate(" + rotation + "deg)";
         }
       </script>
     </dom-module>

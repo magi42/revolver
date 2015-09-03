@@ -1,0 +1,20 @@
+{
+  "name": "revolver",
+  "version": "0.1.0",
+  "authors": [
+    "Marko Gronroos <magi@iki.fi>"
+  ],
+  "description": "Revolver makes things go around",
+  "main": "revolver.html",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.0.0"
+  }
+}

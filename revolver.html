@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <meta charset="utf-8"></meta>
+    <link rel="import" href="bower_components/polymer/polymer.html">
+  </head>
+
+  <body>
+    <dom-module id="magi-revolver">
+      <template>
+        <div id="revolverarea">
+          <content></content>
+        </div>
+
+        <style>
+          .magi-revolver {
+              overflow: hidden;
+          }
+        </style>
+      </template>
+
+      <script>
+        var rotating = 0;
+        var rotation = 0.0;
+        var startDirection = 0.0;
+        var lastDirection = 0.0;
+
+        function handleRevolverDown(event) {
+          console.log("Start rotation on: " + this.src + " at " + event.clientX);
+          startDirection = calculateDirection(this, event);
+          rotating = 1;
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        function handleRevolverUpOut(event) {
+          console.log("End rotation on: " + this.src + " at " + event.clientX);
+          rotation = (lastDirection + 360) % 360;
+
+          rotating = 0;
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        function handleRevolverMove(event) {
+          if (rotating) {
+            var mouseDirection = calculateDirection(this, event);
+            lastDirection = rotation + mouseDirection - startDirection;
+
+            rotate(this, lastDirection);
+            console.log("Drag on: " + this.src + " at " + lastDirection);
+          }
+          event.preventDefault();
+          event.stopPropagation();
+        }
+
+        function calculateDirection(element, event) {
+          var posx = event.clientX - element.x;
+          var posy = event.clientY - element.y;
+          var x = posx - element.clientWidth / 2;
+          var y = posy - element.clientHeight / 2;
+          return Math.atan2(y, x) * (180/Math.PI);
+        }
+
+        function rotate(element, rotation) {
+           element.style =
+                 "-moz-transform:rotate(" + rotation + "deg); " +
+                 "-webkit-transform:rotate(" + rotation + "deg); " +
+                 "-ms-transform:rotate(" + rotation + "deg); "
+        }
+
+        function addDragHandlers(node) {
+          node.addEventListener("mousemove", handleRevolverMove);
+          node.addEventListener("mousedown", handleRevolverDown);
+          node.addEventListener("mouseup", handleRevolverUpOut);
+          node.addEventListener("mouseout", handleRevolverUpOut);
+        }
+
+        Polymer({
+          is: "magi-revolver",
+          attached: function(e) {
+            var images = document.querySelectorAll('magi-revolver img');
+            for (i=0; i < images.length; i++) {
+              addDragHandlers(images[i]);
+            }
+          }
+        });
+      </script>
+    </dom-module>
+  </body>
+</html>

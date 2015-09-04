@@ -8,12 +8,12 @@
   <body>
     <dom-module id="magi-revolver">
       <template>
-        <div id="revolverarea">
+        <div id="revolverarea" on-mousedown="mouseDown" on-mousemove="mouseMove" on-mouseout="mouseUpOut" on-mouseup="mouseUpOut">
           <content></content>
         </div>
 
         <style>
-          .magi-revolver {
+          :host {
               overflow: hidden;
           }
         </style>
@@ -23,65 +23,54 @@
         Polymer({
           is: "magi-revolver",
           attached: function(e) {
-            var images = document.querySelectorAll('magi-revolver img');
-            for (i=0; i < images.length; i++) {
-              initializeRotable(images[i]);
+            console.log("Initializing " + this)
+
+            this.rotating = 0;
+            this.rotation = 0.0;
+            this.startDirection = 0.0;
+            this.lastDirection = 0.0;
+
+            console.log("Initialized " + this)
+          },
+
+          mouseDown: function(event) {
+            console.log("MOUSEDOWN on " + this)
+            this.startDirection = calculateDirection(this, event);
+            this.rotating = 1;
+            event.preventDefault();
+            event.stopPropagation();
+          },
+
+          mouseMove: function(event) {
+            if (this.rotating) {
+              console.log("Dragging " + this.$.revolverarea.clientTop + " event " + event.clientX)
+              var mouseDirection = calculateDirection(this.$.revolverarea, event);
+              this.lastDirection = this.rotation + mouseDirection - this.startDirection;
+              console.log("Dragging " + this.localName + " to rotateX(" + this.lastDirection + "deg)")
+
+              this.transform("rotate(" + this.lastDirection + "deg)", this.$.revolverarea);
             }
+            event.preventDefault();
+            event.stopPropagation();
+          },
+
+          mouseUpOut: function(event) {
+            console.log("MOUSEUP/OUT")
+            this.rotation = (this.lastDirection + 360) % 360;
+
+            this.rotating = 0;
+            event.preventDefault();
+            event.stopPropagation();
           }
         });
 
-        function initializeRotable(node) {
-          node.rotation = 0.0;
-          node.startDirection = 0.0;
-          node.lastDirection = 0.0;
-
-          node.addEventListener("mousemove", handleRevolverMove);
-          node.addEventListener("mousedown", handleRevolverDown);
-          node.addEventListener("mouseup", handleRevolverUpOut);
-          node.addEventListener("mouseout", handleRevolverUpOut);
-        }
-
-        var rotating = 0;
-
-        function handleRevolverDown(event) {
-          this.startDirection = calculateDirection(this, event);
-          rotating = 1;
-          event.preventDefault();
-          event.stopPropagation();
-        }
-
-        function handleRevolverUpOut(event) {
-          this.rotation = (this.lastDirection + 360) % 360;
-
-          rotating = 0;
-          event.preventDefault();
-          event.stopPropagation();
-        }
-
-        function handleRevolverMove(event) {
-          if (rotating) {
-            var mouseDirection = calculateDirection(this, event);
-            this.lastDirection = this.rotation + mouseDirection - this.startDirection;
-
-            rotate(this, this.lastDirection);
-          }
-          event.preventDefault();
-          event.stopPropagation();
-        }
-
+        // TODO How to get the element's coordinates?
         function calculateDirection(element, event) {
-          var posx = event.clientX - element.x;
-          var posy = event.clientY - element.y;
+          var posx = event.offsetX - element.clientLeft;
+          var posy = event.offsetY - element.clientTop;
           var x = posx - element.clientWidth / 2;
           var y = posy - element.clientHeight / 2;
           return Math.atan2(y, x) * (180/Math.PI);
-        }
-
-        function rotate(element, rotation) {
-          element.style.transform = "rotate(" + rotation + "deg)";
-          element.style.MozTransform = "rotate(" + rotation + "deg)";
-          element.style.WebkitTransform = "rotate(" + rotation + "deg)";
-          element.style.msTransform = "rotate(" + rotation + "deg)";
         }
       </script>
     </dom-module>

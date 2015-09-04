@@ -20,7 +20,7 @@
       </template>
 
       <script>
-        Polymer({
+        Revolver = Polymer({
           is: "magi-revolver",
 
           attached: function(e) {
@@ -31,7 +31,7 @@
           },
 
           mouseDown: function(event) {
-            this.startDirection = calculateDirection(this, event);
+            this.startDirection = calculateDirection(this.$.revolverarea, event);
             this.rotating = 1;
             event.preventDefault();
             event.stopPropagation();
@@ -39,11 +39,15 @@
 
           mouseMove: function(event) {
             if (this.rotating) {
+              // TODO There's something funny about this - it restarts from zero rotation
               var node = this.$.revolverarea;
               var mouseDirection = calculateDirection(this.$.revolverarea, event);
-              this.lastDirection = this.rotation + mouseDirection - this.startDirection;
+              var direction = this.rotation + mouseDirection - this.startDirection;
+              this.lastDirection = direction
 
-              this.transform("rotate(" + this.lastDirection + "deg)", this.$.revolverarea);
+              this.transform("rotate(" + direction + "deg)", this.$.revolverarea);
+        
+              this.fire("rotating", {rotation: (direction + 360) % 360});
             }
             event.preventDefault();
             event.stopPropagation();

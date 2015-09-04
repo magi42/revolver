@@ -22,19 +22,15 @@
       <script>
         Polymer({
           is: "magi-revolver",
-          attached: function(e) {
-            console.log("Initializing " + this)
 
+          attached: function(e) {
             this.rotating = 0;
             this.rotation = 0.0;
             this.startDirection = 0.0;
             this.lastDirection = 0.0;
-
-            console.log("Initialized " + this)
           },
 
           mouseDown: function(event) {
-            console.log("MOUSEDOWN on " + this)
             this.startDirection = calculateDirection(this, event);
             this.rotating = 1;
             event.preventDefault();
@@ -43,10 +39,9 @@
 
           mouseMove: function(event) {
             if (this.rotating) {
-              console.log("Dragging " + this.$.revolverarea.clientTop + " event " + event.clientX)
+              var node = this.$.revolverarea;
               var mouseDirection = calculateDirection(this.$.revolverarea, event);
               this.lastDirection = this.rotation + mouseDirection - this.startDirection;
-              console.log("Dragging " + this.localName + " to rotateX(" + this.lastDirection + "deg)")
 
               this.transform("rotate(" + this.lastDirection + "deg)", this.$.revolverarea);
             }
@@ -55,7 +50,6 @@
           },
 
           mouseUpOut: function(event) {
-            console.log("MOUSEUP/OUT")
             this.rotation = (this.lastDirection + 360) % 360;
 
             this.rotating = 0;
@@ -64,13 +58,17 @@
           }
         });
 
-        // TODO How to get the element's coordinates?
         function calculateDirection(element, event) {
-          var posx = event.offsetX - element.clientLeft;
-          var posy = event.offsetY - element.clientTop;
-          var x = posx - element.clientWidth / 2;
-          var y = posy - element.clientHeight / 2;
-          return Math.atan2(y, x) * (180/Math.PI);
+          var doc = document.documentElement;
+          var scrollLeft = (window.pageXOffset || doc.scrollLeft) - (doc.clientLeft || 0);
+          var scrollTop = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+
+          var posx = scrollLeft + event.clientX - element.offsetLeft;
+          var posy = scrollTop + event.clientY - element.offsetTop;
+          var relx = posx - element.clientWidth / 2.0;
+          var rely = posy - element.clientHeight / 2.0;
+
+          return Math.atan2(rely, relx) * (180/Math.PI);
         }
       </script>
     </dom-module>

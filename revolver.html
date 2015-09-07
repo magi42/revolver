@@ -59,6 +59,11 @@
             this.rotating = 0;
             event.preventDefault();
             event.stopPropagation();
+          },
+
+          rotateTo: function(rotation) {
+              this.rotation = rotation;
+              this.transform("rotate(" + rotation + "deg)", this.$.revolverarea);
           }
         });
 

@@ -44,7 +44,8 @@
       
       <script>
         // Handle events
-        document.getElementById('earth').addEventListener('rotating', function (e) {
+        var earth = document.getElementById('earth');
+        earth.addEventListener('rotating', function (e) {
           document.getElementById("dirindicator").innerHTML = Math.floor(e.detail.rotation*100)/100.0 + "°";
         })
 
@@ -53,6 +54,15 @@
         // var mars = new Revolver();
         mars.innerHTML = "<p>Here is text</p> <img src='images/mars.jpg'/>";
         document.getElementById("demoarea").appendChild(mars);
+
+        // Now rotate that as well
+        earth.addEventListener('rotating', function (e) {
+          mars.rotateTo(-2*e.detail.rotation);
+        })
+
+        mars.addEventListener('rotating', function (e) {
+          earth.rotateTo(-0.5*e.detail.rotation);
+        })
       </script>
     </div>
 
@@ -60,7 +70,7 @@
     <address>Marko Grönroos</address>
 <!-- Created: Thu Sep  3 13:38:07 EEST 2015 -->
 <!-- hhmts start -->
-Last modified: Fri Sep  4 19:51:54 EEST 2015
+Last modified: Fri Sep  4 20:05:05 EEST 2015
 <!-- hhmts end -->
   </body>
 </html>
